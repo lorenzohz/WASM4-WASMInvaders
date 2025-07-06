@@ -24,13 +24,13 @@
 // Sprite do jogador (8x8 pixels)
 const uint8_t player_sprite[] = {
     0b11100111, 
+    0b11100111, 
+    0b11100111, 
     0b11000011, 
     0b10000001, 
-    0b00000000, 
-    0b00000000, 
-    0b11111111, 
-    0b11111111, 
-    0b11111111,
+    0b10000001, 
+    0b10011001, 
+    0b10111101,
 };
 
 // Sprite do alienígena (8x8 pixels)
