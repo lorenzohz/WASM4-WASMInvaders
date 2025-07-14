@@ -14,7 +14,6 @@
 #include "wasm4.h"
 
 // --- Constantes para Lógica Booleana ---
-// Usamos 1 e 0 para representar verdadeiro e falso, respectivamente.
 #define TRUE 1
 #define FALSE 0
 
@@ -74,7 +73,6 @@ const uint8_t alien_sprite[] = {
 };
 
 // --- Estruturas de Dados ---
-// Agrupam variáveis relacionadas para cada elemento do jogo.
 
 // Estrutura para as estrelas do fundo
 typedef struct
@@ -104,22 +102,21 @@ typedef struct
 } Alien;
 
 // --- Variáveis Globais ---
-// Variáveis que mantêm o estado do jogo durante a execução.
-Player player;
-Bullet player_bullet;
-Alien aliens[TOTAL_ALIENS];
-Star stars[STAR_COUNT];
-int game_state;
+Player player;                  // Estado do jogador
+Bullet player_bullet;           // Estado do projétil do jogador
+Alien aliens[TOTAL_ALIENS];     // Array de alienígenas
+Star stars[STAR_COUNT];         // Array de estrelas do fundo
+int game_state;                 // Estado atual do jogo
 
-int alien_direction = 1;           // Direção dos alienígenas (1=direita, -1=esquerda)
-int alien_timer = 20;              // Timer para controlar a velocidade de movimento dos alienígenas
+int alien_direction = 1;        // Direção dos alienígenas (1=direita, -1=esquerda)
+int alien_timer = 20;           // Timer para controlar a velocidade de movimento dos alienígenas
 int current_alien_move_delay = 20; // Valor para resetar o timer
-int score = 0;                     // Pontuação do jogador
-uint32_t random_seed = 1;          // Semente para o gerador de números aleatórios
-int aliens_left;                   // Contador de alienígenas vivos
-int current_wave = 1;              // Número da onda atual
-int current_alien_rows;            // Número de linhas de alienígenas na onda atual
-int current_alien_cols;            // Número de colunas de alienígenas na onda atual
+int score = 0;                  // Pontuação do jogador
+uint32_t random_seed = 1;       // Semente para o gerador de números aleatórios
+int aliens_left;                // Contador de alienígenas vivos
+int current_wave = 1;           // Número da onda atual
+int current_alien_rows;         // Número de linhas de alienígenas na onda atual
+int current_alien_cols;         // Número de colunas de alienígenas na onda atual
 
 // --- Variáveis Globais para música de vitória de onda ---
 int wave_jingle_melody[] = {
@@ -196,6 +193,7 @@ void itoa(int n, char str[])
     }
 }
 
+// Retorna o menor valor entre dois inteiros
 int minimum(int a, int b)
 {
     return (a < b) ? a : b;
@@ -225,6 +223,7 @@ void init_aliens()
 {
     aliens_left = 0;
 
+    // Limita o número de linhas e colunas
     if (current_alien_rows > ALIEN_ROWS)
     {
         current_alien_rows = ALIEN_ROWS;
@@ -234,6 +233,7 @@ void init_aliens()
         current_alien_cols = ALIEN_COLS;
     }
 
+    // Inicializa alienígenas vivos
     for (int y = 0; y < current_alien_rows; ++y)
     {
         for (int x = 0; x < current_alien_cols; ++x)
@@ -244,6 +244,7 @@ void init_aliens()
         }
     }
 
+    // Marca alienígenas restantes como mortos
     for (int i = aliens_left; i < TOTAL_ALIENS; ++i)
     {
         aliens[i].alive = FALSE;
@@ -318,16 +319,19 @@ void play_wave_jingle()
  */
 void update_player(uint8_t gamepad)
 {
+    // Movimento horizontal
     if (gamepad & BUTTON_LEFT)
         player.x -= PLAYER_SPEED;
     if (gamepad & BUTTON_RIGHT)
         player.x += PLAYER_SPEED;
 
+    // Limita posição do jogador
     if (player.x < 0)
         player.x = 0;
     if (player.x > 160 - 8)
         player.x = 160 - 8;
 
+    // Disparo do projétil
     if ((gamepad & BUTTON_1) && !player_bullet.active)
     {
         player_bullet.x = player.x + 3;
@@ -336,6 +340,7 @@ void update_player(uint8_t gamepad)
         tone(1000, 10, 50, TONE_PULSE1); // Som de tiro
     }
 
+    // Desenha o jogador
     *DRAW_COLORS = 3; // Cor da nave
     blit(player_sprite, player.x, player.y, 8, 8, BLIT_1BPP);
 }
@@ -367,6 +372,7 @@ void update_aliens()
     if (alien_timer <= 0)
     {
         alien_timer = current_alien_move_delay;
+        // Verifica se algum alienígena chegou na borda
         for (int i = 0; i < TOTAL_ALIENS; ++i)
         {
             if (aliens[i].alive)
@@ -391,6 +397,7 @@ void update_aliens()
         }
     }
 
+    // Desenha alienígenas vivos
     *DRAW_COLORS = 4;
     for (int i = 0; i < TOTAL_ALIENS; ++i)
     {
@@ -414,6 +421,7 @@ void check_collisions()
         {
             int a_x = aliens[i].x, a_y = aliens[i].y, a_w = 8, a_h = 8;
             int b_x = player_bullet.x, b_y = player_bullet.y, b_w = 2, b_h = 4;
+            // Verifica colisão
             if (b_x < a_x + a_w && b_x + b_w > a_x && b_y < a_y + a_h && b_y + b_h > a_y)
             {
                 aliens[i].alive = FALSE;
@@ -434,6 +442,7 @@ void next_wave()
 {
     current_wave++;
 
+    // Aumenta velocidade dos alienígenas
     current_alien_move_delay = 20 - (current_wave * 3);
     if (current_alien_move_delay < 5)
     {
@@ -451,6 +460,7 @@ void next_wave()
     init_aliens();
     alien_direction = 1;
 
+    // Inicia jingle de vitória
     current_jingle_note_index = 0;
     jingle_note_timer = 0;
     playing_wave_jingle = TRUE;
@@ -470,6 +480,7 @@ void check_player_collision()
         {
             int a_x = aliens[i].x, a_y = aliens[i].y, a_w = 8, a_h = 8;
 
+            // Verifica colisão
             if (p_x < a_x + a_w &&
                 p_x + p_w > a_x &&
                 p_y < a_y + a_h &&
@@ -479,6 +490,7 @@ void check_player_collision()
 
                 tone(50, 60, 100, TONE_TRIANGLE);
 
+                // Reinicia estado do jogo
                 init_aliens();
                 player.x = 76;
                 player_bullet.active = FALSE;
@@ -561,6 +573,7 @@ void draw_wave()
     text(wave_text, 100, 5); // Posição para a wave
 }
 
+// Atualiza tela de menu e verifica início do jogo
 void update_menu()
 {
     uint8_t gamepad = *GAMEPAD1;
@@ -610,14 +623,14 @@ void update()
     {
         uint8_t gamepad = *GAMEPAD1;
 
-        update_player(gamepad);
-        update_player_bullet();
-        update_aliens();
-        check_collisions();
-        check_player_collision();
-        draw_score();
-        draw_wave();
-        play_wave_jingle();
+        update_player(gamepad);         // Atualiza jogador
+        update_player_bullet();         // Atualiza projétil
+        update_aliens();                // Atualiza alienígenas
+        check_collisions();             // Verifica colisão projétil-alienígena
+        check_player_collision();       // Verifica colisão jogador-alienígena
+        draw_score();                   // Desenha pontuação
+        draw_wave();                    // Desenha onda
+        play_wave_jingle();             // Toca jingle de onda
 
         // Verifica se todos os alienígenas foram destruídos
         if (aliens_left <= 0)
