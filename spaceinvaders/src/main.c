@@ -136,6 +136,8 @@ int playing_wave_jingle = FALSE; // Flag para saber se o jingle está tocando
  * Define a paleta de cores customizada do jogo.
  * As cores são definidas em formato hexadecimal RGB (0xRRGGBB).
  */
+
+// Paleta de cores verde
 void set_palette()
 {
     PALETTE[0] = 0x191b1a; // Cor 1 (Fundo)
@@ -143,6 +145,17 @@ void set_palette()
     PALETTE[2] = 0x579c9a; // Cor 3
     PALETTE[3] = 0x99c9b3; // Cor 4 (Destaque)
 }
+
+// Paleta de cores roxa
+/*
+void set_palette()
+{
+    PALETTE[0] = 0x051f39; // Cor 1 (Fundo)
+    PALETTE[1] = 0x051f39; // Cor 2
+    PALETTE[2] = 0xc53a9d; // Cor 3
+    PALETTE[3] = 0xff8e80; // Cor 4 (Destaque)
+}
+*/
 
 /**
  * Gera um número inteiro pseudoaleatório dentro de um intervalo.
