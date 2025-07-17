@@ -101,6 +101,13 @@ typedef struct
     uint8_t alive; // Estado do alienígena (vivo ou morto)
 } Alien;
 
+// Estrutura para uma explosão
+typedef struct {
+    int x, y;
+    int life; // Tempo de vida restante em frames
+    uint8_t active;
+} Explosion;
+
 // --- Variáveis Globais ---
 Player player;                  // Estado do jogador
 Bullet player_bullet;           // Estado do projétil do jogador
@@ -117,6 +124,9 @@ int aliens_left;                // Contador de alienígenas vivos
 int current_wave = 1;           // Número da onda atual
 int current_alien_rows;         // Número de linhas de alienígenas na onda atual
 int current_alien_cols;         // Número de colunas de alienígenas na onda atual
+
+#define EXPLOSION_DURATION 10 // Número de frames que a explosão permanece
+Explosion explosions [TOTAL_ALIENS]; // Supondo que no máximo todos os alienígenas explodam ao mesmo tempo
 
 // --- Variáveis Globais para música de vitória de onda ---
 int wave_jingle_melody[] = {
@@ -264,6 +274,20 @@ void init_aliens()
     }
 }
 
+// Cria uma explosão na posição especificada
+
+void create_explosion(int x, int y) {
+    for (int i = 0; i < TOTAL_ALIENS; ++i) {
+        if (!explosions [i].active) {
+            explosions [i].x = x;
+            explosions [i].y = y;
+            explosions [i].life = EXPLOSION_DURATION;
+            explosions [i].active = TRUE;
+            break;
+        }
+    }
+}
+
 /**
  * Função principal de inicialização do jogo.
  * É chamada uma única vez quando o cartucho é carregado.
@@ -283,6 +307,9 @@ void start()
     player.y = 140;
     player_bullet.active = FALSE;
     game_state = GAME_STATE_MENU;
+    for (int i = 0; i < TOTAL_ALIENS; ++i) {
+        explosions [i].active = FALSE;
+    }
 
     current_alien_move_delay = 20;
     alien_timer = current_alien_move_delay;
@@ -421,6 +448,20 @@ void update_aliens()
     }
 }
 
+/*
+    * Atualiza o estado das explosões, diminuindo sua vida e desativando-as quando necessário.
+*/
+void update_explosions() {
+    for (int i = 0; i < TOTAL_ALIENS; ++i) {
+        if (explosions [i].active) {
+            explosions [i].life--;
+            if (explosions [i].life <= 0) {
+                explosions [i].active = FALSE;
+            }
+        }
+    }
+}
+
 /**
  * Verifica colisões entre o projétil do jogador e os alienígenas.
  */
@@ -438,6 +479,7 @@ void check_collisions()
             if (b_x < a_x + a_w && b_x + b_w > a_x && b_y < a_y + a_h && b_y + b_h > a_y)
             {
                 aliens[i].alive = FALSE;
+                create_explosion(aliens [i].x, aliens [i].y);
                 player_bullet.active = FALSE;
                 score += 10;
                 aliens_left--;
@@ -545,6 +587,28 @@ void draw_background_stars()
 }
 
 /**
+ * Desenha as explosões na tela.
+ * As explosões são desenhadas como pequenos quadrados.
+ */
+void draw_explosions() {
+    for (int i = 0; i < TOTAL_ALIENS; ++i) {
+        if (explosions[i].active) {
+            int base_x = explosions[i].x;
+            int base_y = explosions[i].y;
+
+            *DRAW_COLORS = 4;
+            rect(base_x + random_int(-2, 2), base_y + random_int(-2, 2), 2, 2);
+
+            *DRAW_COLORS = 4;
+            rect(base_x + random_int(-3, 3), base_y + random_int(-3, 3), 3, 3);
+            
+            *DRAW_COLORS = 3;
+            rect(base_x + random_int(-1, 1), base_y + random_int(-1, 1), 2, 2);
+        }
+    }
+}
+
+/**
  * Desenha a pontuação na tela.
  */
 void draw_score()
@@ -644,6 +708,8 @@ void update()
         draw_score();                   // Desenha pontuação
         draw_wave();                    // Desenha onda
         play_wave_jingle();             // Toca jingle de onda
+        update_explosions();            // Atualiza explosões
+        draw_explosions();              // Desenha explosões
 
         // Verifica se todos os alienígenas foram destruídos
         if (aliens_left <= 0)
