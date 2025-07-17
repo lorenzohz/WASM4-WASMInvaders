@@ -1,5 +1,5 @@
 /**
- * main.c - Jogo Space Invaders para o console de fantasia WASM-4.
+ * main.c - Jogo Space Invaders reimaginado para o console de fantasia WASM-4.
  *
  * Este arquivo contém a lógica completa do jogo, incluindo:
  * - Movimento e tiro do jogador.
@@ -8,6 +8,8 @@
  * - Sistema de pontuação.
  * - Fundo animado de estrelas com efeito de paralaxe.
  * - Paleta de cores customizada.
+ * - Efeitos sonoros e música de vitória de onda.
+ * - Explosões e efeitos visuais.
  * O código é autocontido e não depende de bibliotecas C padrão como stdio ou stdbool.
  */
 
@@ -657,7 +659,7 @@ void update_menu()
 
     // Desenha o título e as instruções
     *DRAW_COLORS = 4;
-    text("SPACE INVADERS", 24, 50);
+    text("WASM INVADERS", 28, 50);
 
     *DRAW_COLORS = 3;
     text("Pressione espaco", 16, 80);
