@@ -399,7 +399,7 @@ void update_player_bullet()
         {
             player_bullet.active = FALSE;
         }
-        *DRAW_COLORS = 3; // Cor do projétil
+        *DRAW_COLORS = 4; // Cor do projétil
         rect(player_bullet.x, player_bullet.y, 2, 4);
     }
 }
@@ -485,7 +485,7 @@ void check_collisions()
                 player_bullet.active = FALSE;
                 score += 10;
                 aliens_left--;
-                tone(200, 15, 80, TONE_NOISE);
+                tone(150, 15, 80, TONE_NOISE);
                 break;
             }
         }
@@ -628,6 +628,7 @@ void draw_score()
     while (*value_ptr)
         *score_ptr++ = *value_ptr++;
     *score_ptr = '\0';
+    *DRAW_COLORS = 3; // Cor da pontuação
     text(score_text, 5, 5); // Posição para a pontuação
 }
 
@@ -649,6 +650,7 @@ void draw_wave()
     while (*value_ptr)
         *wave_ptr++ = *value_ptr++;
     *wave_ptr = '\0';
+    *DRAW_COLORS = 2;
     text(wave_text, 100, 5); // Posição para a wave
 }
 
@@ -662,9 +664,9 @@ void update_menu()
     text("WASM INVADERS", 28, 50);
 
     *DRAW_COLORS = 3;
-    text("Pressione espaco", 16, 80);
-    text("ou clique para", 25, 90);
-    text("comecar", 52, 100);
+    text("Press Space", 35, 80);
+    text("or click", 47, 90);
+    text("to start", 47, 100);
 
     // Lógica para iniciar o jogo:
     // Verifica se o Botão 1 do Gamepad foi pressionado OU
