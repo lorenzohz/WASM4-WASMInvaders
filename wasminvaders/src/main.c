@@ -632,7 +632,7 @@ void draw_score()
     text(score_text, 5, 5); // Posição para a pontuação
 }
 
-/**
+/*
  * Desenha a onda atual na tela.
  */
 void draw_wave()
