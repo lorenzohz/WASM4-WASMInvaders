@@ -1,14 +1,10 @@
----
-author: Lorenzo Henrique Zanetti, Matheus Cenerini Jacomini
-github: lorenzohz, Mathayuz
-date: 2025-07-22
----
-
 # WASM Invaders
 
 Um clássico jogo de tiro arcade, inspirado no clássico Space Invaders e reimaginado em C para o console de fantasia [WASM-4](https://wasm4.org).
 
-![Gameplay Screenshot](wasminvaders.png)
+<p align="center">
+    <img src="wasminvaders.png" alt="Gameplay Screenshot" width="320"/>
+</p>
 
 
 ## Descrição
